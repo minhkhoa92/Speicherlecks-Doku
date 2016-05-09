@@ -3,19 +3,19 @@
 ### Copyright Geschichte
 
 [Dr.Memory](http://drmemory.org/docs/index.html) steht unter der LGPL v2.1 (1999). [Link zu Dr.Memory auf github](https://github.com/DynamoRIO/drmemory)<BR>
-Ich bin mir nicht sicher, ob das Pflicht ist, meine Uebersetzung mit der gleichen Lizenz zu versehen. Deshalb lasse ich das mal bleiben und werde mir im Anschluss Gedanken machen, welche Lizens ich diesem Text gebe.
+Ich bin mir nicht sicher, ob das Pflicht ist, meine Uebersetzung mit der gleichen Lizenz zu versehen. Deshalb lasse ich das mal bleiben und werde mir im Anschluss Gedanken machen, welche Lizenz ich diesem Text gebe.
 
 Weil das im Grunde eine Uebersetzungsuebung ist ;), ist es mir egal, wer das wo verwendet.
 
 ## Einfuehrung
 
-Das Verstaendnis vom Speicheraufbau und der Funktionsweise des Programmes ist eine wichtige Grundlage, um Speicherlecks im Quelltext von Programmen zu finden. Um das eine reine Uebersetzung zu halten, koennen durchaus fachliche Fehler enthalten sein, die eben meiner Unkompetenz entspricht. Dies ist keine wissenschaftliche Arbeit und ist kein Ersatz fuer eine Theoriegrundlage, sondern eine Hilfestellung fuer die Praxis.<BR>
+Das Verstaendnis vom Speicheraufbau und der Funktionsweise des Programmes ist eine wichtige Grundlage, um Speicherlecks im Quelltext von Programmen zu finden. Um das hier eine reine Uebersetzung zu halten, koennen durchaus fachliche Fehler enthalten sein, die eben meiner Unkompetenz entspricht. Dies ist keine wissenschaftliche Arbeit und ist kein Ersatz fuer eine Theoriegrundlage, sondern eine Hilfestellung in der Praxis.<BR>
 Ich werde mich fuer alle Hinweise auf Fehler bedanken. Ich bin per Hochschul-Email erreichbar.<BR>
-Weil man mit Dr.Memory keine Java Programme auf Speicherfehlzugriffe untersuchen kann, teile ich den Java Teil in ein anderes Repository ein. Ein weiterer Grund fuer die Teilung ist der Unterschied zwischen den Lizensen von Java und Dr.Memory.
+Weil man mit Dr.Memory keine Java Programme auf Speicherfehlzugriffe untersuchen kann, teile ich den Java Teil in ein anderes Repository ein. Ein weiterer Grund fuer die Teilung ist der Unterschied zwischen den Lizenzen von Java und Dr.Memory.
 
 ## Speicherleck
 
-Dies ist ein dynamisch allokierter Speicher, auf den ein Zeiger verwiesen hat. Der Zeigerwert wurde allerdings ueberschrieben und der allokierte Speicher nicht davor freigegeben.
+Wenn ein Programm Speicher reserviert, nicht wieder freigibt und stattdessen auch noch weiterhin Speicher reserviert, wird dies als Speicherleck bezeichnet. Man sagt das Programm "verliert" Speicher. Gemeint ist damit, dass sich der fuer das Programm verfuegbare Speicher immer weiter verkleinert. Das Programm muss neu gestartet werden, denn sonst wird es auf Grund des Speichermangels zu Systemfehlern kommen. (Quelle: [www.itwissen.info](http://www.itwissen.info/definition/lexikon/Speicherleck-memory-leak.html))
 
 ## Was ist Dr.Memory?
 
@@ -31,7 +31,7 @@ Laut Angaben auf der Homepage von Dr.Memory ist die Debug-Geschwindigkeit sogar 
 * debug-Informationen in den ausfuehrbaren Dateien notwendig (siehe Tabelle im Anschluss)
 
 | Dateityp (Betriebssystem)     | Debug-Information |
-| ----------------------------- | :---------------- |
+| ----------------------------- | ----------------- |
 | ELF (Linux)                   | DWARF2            |
 | Mach-O (Mac OS)               | DWARF2            |
 | PDB (Windows / Visual Studio) | PDB               |
@@ -39,22 +39,22 @@ Laut Angaben auf der Homepage von Dr.Memory ist die Debug-Geschwindigkeit sogar 
 
 Auf 64-bit Betriebssystemen impliziert das eine Installation von 32-bit Library.<BR>
 Und man muss eventuell seine Programme besonders kompilieren.
-* Unter gcc sind die Optionen -m32 -g Pflicht. Moeglichst mit einen -O0.
+* Unter gcc sind die Optionen -m32 -g Pflicht. Moeglichst mit einen -O0 kompilieren.
 * Unter Visual Studio (bin noch kein Verwender) kann man sich durchklicken, dass das /Zi bzw /ZI Option uebergeben wird und zusaetzlich die /DEBUG (ja nicht /DEBUG:OPTIMIZATION).
 
 ### Was kann Dr.Memory nicht?
 
 * 64-bit Programme debuggen
-* Programm pausieren und  
+* Programm pausieren
 * Systemfehler von Programmfehlern unterscheiden (manche Fehler aus Systembibliotheken werden schon unterdrueckt)
 
 ## Aufruf von Dr.Memory
 
 Es muss die entsprechende PATH-Variable auf den bin-Ordner im installierten Ordner gesetzt sein. Das passiert mit der Windows-.msi-Installation automatisch.<BR>
-Sonst kann man drmemory auch mit dem vollstaendigen Pfad aufrufen. (Wie jede andere Anwendung.)
+Sonst kann man drmemory auch mit dem vollstaendigen Pfad aufrufen (, wie es moeglich ist fuer jede andere Anwendung).
 
 Der Aufruf lautet folgendermassen:
-    drmemory [Dr-Memory-Optionen] -- Pfad-zur-ausfuerbaren-Datei [Anwendungsoptionen fuer die zu testende Anwendung]
+    drmemory [Dr-Memory-Optionen] -- Pfad-zur-ausfuerbaren-Datei [Anwendungsargumente fuer die zu testende Anwendung]
 
 Fuer alle Kommandozeilen-Neulinge / -Feinde: Man kann es in Visual Studio integrieren. Wenn ich das machen muss, dann schreibe ich meinen Weg dorthin. 
 
@@ -67,11 +67,11 @@ Nuetzliche Dr.Memory-Optionen:
 Der angegebene Ordner muss existieren. In dem Ordner wird pro Ausfuehrung eines Tests ein Ordner mit dem Namen der getesten Anwendung erzeugt. Alte Ordner werden nicht ueberschrieben. 
 
     -batch
-Unterdrueckt den Aufruf von einem Editor. Unter windows wird sonst ein Notepad Fenster mit dem Testergebnis geöffnet. 
+Unterdrueckt den Aufruf von einem Editor. Unter windows wird ohne diese Option sonst ein Notepad Fenster mit dem Testergebnis geöffnet.
 
     -nudge <processid>
 Die angegebene Prozess-ID muss zu einem Prozess gehoeren, der von Dr.Memory beobachtet wird. Dr.Memory wertet den Speicher aus und schreibt die Speicher-Fehler in die Logdatei result.txt auf. Dies passiert unter normalen Umstaenden erst beim Programmende. Ein Anwendungsbeispiel sind Daemons.<BR>
-Nicht vorhanden in MacOS
+Diese Option ist nicht vorhanden in MacOS.
 
     -suppress /Pfad/zur/suppress.txt
 Die Regeln in der suppress.txt Datei werden eingelesen. Die Defaultsupress-Datei befindet sich unter Win7 in Installationsordner/bin/suppress-default.txt
@@ -83,9 +83,9 @@ suppress Dateien sind so zu lesen:
 
 Es muss immer der vollstaendige Dateiname angegeben werden.
 
-Modul-Dateiname!Funktion
+    Modul-Dateiname!Funktion
 
-Das Ausrufezeichen trennt den Dateinamen von der Funktionen. Es werden die wildcards '*' und '?' unterstuetzt <BR>
+Das Ausrufezeichen trennt den Dateinamen von der Funktion. Es werden die wildcards '*' und '?' zum bezeichnen unterstuetzt. Alle entdeckten Fehler in der Programmierung der Funktion oder der Funktionen werden unterdrueckt.<BR>
 Die Funktionsaufrufe von *!__* unterdruecken alle Fehler in allen Modulen in den Funktionen, die mit doppelten Unterstrich beginnen (Systemfunktionen).<BR>
 Der Wildcard *!echo? unterdrueckt alle echo-Funktionen mit einem Zeichen dahinter (echo1, echo2, echo3, echoa)<BR>
 Eine weitere nuetzliche Variante ist das unterdruecken vom Aufrufscheck von einem Modul per Modulname!*<BR>
@@ -93,14 +93,14 @@ Eine weitere nuetzliche Variante ist das unterdruecken vom Aufrufscheck von eine
 
 ## Weitere Optionen zum Aufruf von Dr.Memory
     -light [-count_leaks]
-Dieser Modus dient dazu die Leistung von Dr.Memory zu erhoehen durch verringern der detektierten Fehlersorten. Es werden nicht mehr uninitialisierte Lesezugriffe und Speicherlecks detektiert. Es detektiert unadressierbare Zugriffe (Adressen ausserhalb vom gueltigen Adressraum verstehe ich darunter), ungueltige Heapargumente und GDI (Graphics device interface) Fehler und Warnungen.<BR>
+Dieser Modus dient dazu die Leistung von Dr.Memory zu erhoehen durch verringern der detektierten Fehlersorten. Es werden nicht mehr uninitialisierte Lesezugriffe und Speicherlecks detektiert. In dem Modus detektiert Dr.Memory unadressierbare Zugriffe (Adressen ausserhalb vom gueltigen Adressraum verstehe ich darunter), ungueltige Heapargumente und GDI (Graphics device interface) Fehler und Warnungen.<BR>
 Das -count-leaks bewirkt, dass wieder Speicherlecks detektiert werden.
 
     -report_max <int>
 Gibt die maximale Anzahl von zurueckzugegebenen NICHT-Speicherlecks-Fehler an. Wird -1 angegeben wird keine Grenze gesetzt.
 
     -report_leak_max <int>
-Analog.
+Dies ist analog zu interpretieren.
 
 ## Die Logdateien
 
@@ -117,5 +117,6 @@ Die result.txt enthaelt alle nicht unterdrueckten fehlerhaften Speicherzugriffe.
 ### Ausblick
 
 Ich lese es wieder je nachdem, was ich von der Doku brauche. Wenn Unklarheiten bestehen, besser ich es auf. <BR>
-Anmerkungen wegen Fehlern sind mir immer sehr willkommen. Die, die mich kennen koennen mich per Email erreichen.<BR>
-Code selber fuer Logbeispiele zu schreiben faellt mir gerade schwer, weil ich ein genialen Quelltext neulich abgeschrieben habe mit angeblich allen moeglichen Fehlern von Speicherzugriffen. Sprich, ich gerate in die Gefahr eines Copyright-Deliktes, wenn ich nicht nachfrage.
+Wenn ich Visual Studio Benutzer bin, ergaenze ich die Anleitung zur Verwendung von Dr.Memory in Visual Studio.<BR>
+Anmerkungen wegen Fehlern sind mir immer sehr willkommen. Die, die mich kennen, koennen mich per Email erreichen.<BR>
+Code selber fuer Logbeispiele zu schreiben faellt mir gerade schwer, weil ich einen genialen Quelltext neulich abgeschrieben habe mit angeblich allen moeglichen Fehlern von Speicherzugriffen. Sprich, ich gerate in die Gefahr eines Copyright-Deliktes, wenn ich nicht nachfrage. Verbrechen rauben mir den Schlaf.
